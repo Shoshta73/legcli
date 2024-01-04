@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"runtime"
+	"syscall"
 
 	"gopkg.in/ini.v1"
 )
@@ -43,7 +45,11 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	appdata.configFileBackup = path.Join(homeDir, "legcli.config.ini")
+	if runtime.GOOS == "windows" {
+		appdata.configFileBackup = path.Join(homeDir, "legcli.config.ini")
+	} else {
+		appdata.configFileBackup = path.Join(homeDir, ".legcli.config.ini")
+	}
 
 	confDirInfo, err := os.Stat(appdata.configDir)
 	if os.IsExist(err) {
@@ -136,9 +142,31 @@ func main() {
 		}
 		confDirInfo, err := os.Stat(appdata.configDir)
 
+		var hideFile = func(f string) {
+			if runtime.GOOS != "windows" {
+				return
+			}
+
+			var p = func(e error) {
+				if err != nil {
+					panic(err)
+				}
+			}
+
+			f_ptr, err := syscall.UTF16PtrFromString(f)
+			p(err)
+			attr, err := syscall.GetFileAttributes(f_ptr)
+			p(err)
+
+			attr |= syscall.FILE_ATTRIBUTE_HIDDEN
+			err = syscall.SetFileAttributes(f_ptr, attr)
+			p(err)
+		}
+
 		var writeFile = func(f string) {
 			cfd := getConfigFileData()
 			writeConfigFile(f, cfd)
+			hideFile(f)
 		}
 
 		if err != nil {
@@ -156,9 +184,11 @@ func main() {
 
 		if confDirInfo.Mode().IsDir() {
 			writeFile(appdata.configFileBackup)
+			return
 		}
 		if confDirInfo.Mode().IsRegular() {
 			writeFile(appdata.configFileBackup)
+			return
 		}
 	}
 }
