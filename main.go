@@ -45,5 +45,17 @@ func main() {
 
 	parseArgs(args)
 	if cliArgs.init {
+		confDirInfo, err := os.Stat(appdata.configDir)
+
+		if err != nil {
+			if os.IsNotExist(err) {
+				err := os.Mkdir(appdata.configDir, 0755)
+				if err != nil {
+					panic(err)
+				}
+			} else {
+				panic(err)
+			}
+		}
 	}
 }
