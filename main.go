@@ -28,11 +28,23 @@ type APPDATA struct {
 }
 
 var appdata APPDATA
+
+// command Line argumens
 type ARGS struct {
 	init  bool
+	flags APPFLAGS
 }
-var appdata APPDATA
-var cliArgs ARGS
+
+type APPFLAGS struct {
+	verbose bool
+}
+
+var cliArgs ARGS = ARGS{
+	init: false,
+	flags: APPFLAGS{
+		verbose: false,
+	},
+}
 
 func parseArgs(args []string) {
 	if args[0] == "init" {
@@ -69,19 +81,23 @@ func init() {
 		appdata.configFileBackup = path.Join(homeDir, ".legcli.config.ini")
 	}
 
+	var useConfigFile string
+
 	confDirInfo, err := os.Stat(appdata.configDir)
-	if os.IsExist(err) {
+	if err == nil {
 		if confDirInfo.IsDir() {
-			confFileData, _ := os.Stat(appdata.configFile)
-			if confFileData.Mode().IsRegular() {
+			confFileData, err := os.Stat(appdata.configFile)
+			if err == nil && confFileData.Mode().IsRegular() {
 				appdata.initialized = true
+				useConfigFile = appdata.configFile
 			}
 		}
 	}
 	confFileData, err := os.Stat(appdata.configFileBackup)
-	if os.IsExist(err) {
+	if err == nil {
 		if confFileData.Mode().IsRegular() {
 			appdata.initialized = true
+			useConfigFile = appdata.configFileBackup
 		}
 	}
 	if appdata.initialized {
@@ -155,13 +171,34 @@ func writeConfigFile(file string, d CFGDATA) {
 
 func main() {
 	args := os.Args[1:]
-
-	parseArgs(args)
+	println(args)
+	if len(args) > 0 {
+		parseArgs(args)
+	}
 	if cliArgs.init {
 		if appdata.initialized {
 			return
 		}
 		confDirInfo, err := os.Stat(appdata.configDir)
+
+		var writeFile = func(f string) {
+			cfd := getConfigFileData()
+			writeConfigFile(f, cfd)
+		}
+
+		if err != nil {
+			if os.IsNotExist(err) {
+				println("Creating config dir at", appdata.configDir)
+				err := os.Mkdir(appdata.configDir, 0755)
+				if err != nil {
+					panic(err)
+				}
+				writeFile(appdata.configFile)
+				return
+			} else {
+				panic(err)
+			}
+		}
 
 		var hideFile = func(f string) {
 			if runtime.GOOS != "windows" {
@@ -184,31 +221,14 @@ func main() {
 			p(err)
 		}
 
-		var writeFile = func(f string) {
-			cfd := getConfigFileData()
-			writeConfigFile(f, cfd)
-			hideFile(f)
-		}
-
-		if err != nil {
-			if os.IsNotExist(err) {
-				err := os.Mkdir(appdata.configDir, 0755)
-				if err != nil {
-					panic(err)
-				}
-				writeFile(appdata.configFile)
-				return
-			} else {
-				panic(err)
-			}
-		}
-
 		if confDirInfo.Mode().IsDir() {
 			writeFile(appdata.configFileBackup)
+			hideFile(appdata.configFileBackup)
 			return
 		}
 		if confDirInfo.Mode().IsRegular() {
 			writeFile(appdata.configFileBackup)
+			hideFile(appdata.configFileBackup)
 			return
 		}
 	}
