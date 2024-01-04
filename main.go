@@ -14,7 +14,17 @@ type APPDATA struct {
 	configFileBackup string
 }
 
+type ARGS struct {
+	init  bool
+}
 var appdata APPDATA
+var cliArgs ARGS
+
+func parseArgs(args []string) {
+	if args[0] == "init" {
+		cliArgs.init = true
+	}
+}
 
 func init() {
 	userConfigDir, err := os.UserConfigDir()
@@ -29,4 +39,11 @@ func init() {
 		panic(err)
 	}
 	appdata.configFileBackup = path.Join(homeDir, "legcli.config.ini")
+}
+func main() {
+	args := os.Args[1:]
+
+	parseArgs(args)
+	if cliArgs.init {
+	}
 }
