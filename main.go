@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 	"path"
+
+	"gopkg.in/ini.v1"
 )
 
 var println = fmt.Println
@@ -88,6 +90,24 @@ AGAIN:
 		return data
 	}
 }
+
+func writeConfigFile(file string, d CFGDATA) {
+	cfg := ini.Empty()
+
+	section, err := cfg.NewSection("Default")
+	if err != nil {
+		println("Error creating section:", err)
+		panic(err)
+	}
+	section.NewKey("fullname", d.fullname)
+	section.NewKey("default_licence", d.defaultLicence)
+
+	err = cfg.SaveTo(file)
+	if err != nil {
+		panic(err)
+	}
+}
+
 func main() {
 	args := os.Args[1:]
 
@@ -95,14 +115,19 @@ func main() {
 	if cliArgs.init {
 		confDirInfo, err := os.Stat(appdata.configDir)
 
+		var writeFile = func(f string) {
+			cfd := getConfigFileData()
+			writeConfigFile(f, cfd)
+		}
+
 		if err != nil {
 			if os.IsNotExist(err) {
 				err := os.Mkdir(appdata.configDir, 0755)
 				if err != nil {
 					panic(err)
 				}
-
-				cfd := getConfigFileData()
+				writeFile(appdata.configFile)
+				return
 			} else {
 				panic(err)
 			}
