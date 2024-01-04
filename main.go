@@ -13,13 +13,21 @@ import (
 
 var println = fmt.Println
 
+// app data
+type APPCFG struct {
+	fullname       string
+	defaultLicence string
+}
+
 type APPDATA struct {
 	initialized      bool
 	configDir        string
 	configFile       string
 	configFileBackup string
+	cfg              APPCFG
 }
 
+var appdata APPDATA
 type ARGS struct {
 	init  bool
 }
@@ -30,6 +38,16 @@ func parseArgs(args []string) {
 	if args[0] == "init" {
 		cliArgs.init = true
 	}
+}
+
+func getConfigData(f string) {
+	cfg, err := ini.Load(f)
+	if err != nil {
+		panic(err)
+	}
+	section := cfg.Section("Default")
+	appdata.cfg.fullname = section.Key("fullname").String()
+	appdata.cfg.defaultLicence = section.Key("default_licence").String()
 }
 
 func init() {
@@ -65,6 +83,9 @@ func init() {
 		if confFileData.Mode().IsRegular() {
 			appdata.initialized = true
 		}
+	}
+	if appdata.initialized {
+		getConfigData(useConfigFile)
 	}
 }
 
