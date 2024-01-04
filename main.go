@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 	"path"
@@ -40,6 +41,53 @@ func init() {
 	}
 	appdata.configFileBackup = path.Join(homeDir, "legcli.config.ini")
 }
+
+type CFGDATA struct {
+	fullname       string
+	defaultLicence string
+}
+
+func getConfigFileData() CFGDATA {
+AGAIN:
+	var data CFGDATA
+
+	scanner := bufio.NewScanner(os.Stdin)
+	var p = fmt.Println
+
+	p("Enter your full name")
+	scanner.Scan()
+	data.fullname = scanner.Text()
+	p("Enter your default licence")
+	scanner.Scan()
+	data.defaultLicence = scanner.Text()
+
+	p("Is this OK? (y/n)")
+	p("Full name:", data.fullname)
+	p("Default licence:", data.defaultLicence)
+	scanner.Scan()
+	ok := scanner.Text()
+
+	switch ok {
+	case "n":
+		fallthrough
+	case "N":
+		fallthrough
+	case "no":
+		fallthrough
+	case "NO":
+		goto AGAIN
+	case "y":
+		fallthrough
+	case "Y":
+		fallthrough
+	case "yes":
+		fallthrough
+	case "YES":
+		return data
+	default:
+		return data
+	}
+}
 func main() {
 	args := os.Args[1:]
 
@@ -53,6 +101,8 @@ func main() {
 				if err != nil {
 					panic(err)
 				}
+
+				cfd := getConfigFileData()
 			} else {
 				panic(err)
 			}
