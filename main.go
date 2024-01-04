@@ -153,5 +153,12 @@ func main() {
 				panic(err)
 			}
 		}
+
+		if confDirInfo.Mode().IsDir() {
+			writeFile(appdata.configFileBackup)
+		}
+		if confDirInfo.Mode().IsRegular() {
+			writeFile(appdata.configFileBackup)
+		}
 	}
 }
