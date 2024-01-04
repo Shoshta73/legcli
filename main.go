@@ -12,6 +12,7 @@ import (
 var println = fmt.Println
 
 type APPDATA struct {
+	initialized      bool
 	configDir        string
 	configFile       string
 	configFileBackup string
@@ -30,6 +31,7 @@ func parseArgs(args []string) {
 }
 
 func init() {
+	appdata.initialized = false
 	userConfigDir, err := os.UserConfigDir()
 	if err != nil {
 		panic(err)
@@ -42,6 +44,22 @@ func init() {
 		panic(err)
 	}
 	appdata.configFileBackup = path.Join(homeDir, "legcli.config.ini")
+
+	confDirInfo, err := os.Stat(appdata.configDir)
+	if os.IsExist(err) {
+		if confDirInfo.IsDir() {
+			confFileData, _ := os.Stat(appdata.configFile)
+			if confFileData.Mode().IsRegular() {
+				appdata.initialized = true
+			}
+		}
+	}
+	confFileData, err := os.Stat(appdata.configFileBackup)
+	if os.IsExist(err) {
+		if confFileData.Mode().IsRegular() {
+			appdata.initialized = true
+		}
+	}
 }
 
 type CFGDATA struct {
@@ -113,6 +131,9 @@ func main() {
 
 	parseArgs(args)
 	if cliArgs.init {
+		if appdata.initialized {
+			return
+		}
 		confDirInfo, err := os.Stat(appdata.configDir)
 
 		var writeFile = func(f string) {
