@@ -35,23 +35,28 @@ var appdata APPDATA
 // command Line argumens
 type ARGS struct {
 	init          bool
+	verbose       bool
 	initBenchmark bool
 }
 
 var cliArgs ARGS = ARGS{
 	init:          false,
+	verbose:       false,
 	initBenchmark: false,
 }
 
 func parseArgs() {
 	flag.BoolVar(&cliArgs.init, "init", false, "initialise app and create config file")
 	flag.BoolVar(&cliArgs.init, "i", false, "initialise app and create config file")
+	flag.BoolVar(&cliArgs.verbose, "verbose", false, "verbose output")
+	flag.BoolVar(&cliArgs.verbose, "v", false, "verbose output")
 	flag.BoolVar(&cliArgs.initBenchmark, "init-benchmark", false, "log the time it took to initialize the app")
 
 	flag.Usage = func() {
 		println("Usage: legcli [options]")
 		println("Options:")
 		println("   --init    | -i      Initialise app and create config file")
+		println("   --verbose | -v      Verbose output")
 	}
 
 	flag.Parse()
@@ -176,6 +181,13 @@ func writeConfigFile(file string, d CFGDATA) {
 	}
 }
 
+var verbose = func(msg ...any) {
+	if !cliArgs.verbose {
+		return
+	}
+	println(msg...)
+}
+
 func main() {
 	if cliArgs.initBenchmark {
 		println("init time:", appdata.initTime)
@@ -195,7 +207,8 @@ func main() {
 
 		if err != nil {
 			if os.IsNotExist(err) {
-				println("Creating config dir at", appdata.configDir)
+
+				verbose("Creating config dir at", appdata.configDir)
 				err := os.Mkdir(appdata.configDir, 0755)
 				if err != nil {
 					panic(err)
@@ -229,11 +242,15 @@ func main() {
 		}
 
 		if confDirInfo.Mode().IsDir() {
+			verbose(appdata.configDir, "is a dir")
+			verbose("Defaulting to the config dir in the home directory")
 			writeFile(appdata.configFileBackup)
 			hideFile(appdata.configFileBackup)
 			return
 		}
 		if confDirInfo.Mode().IsRegular() {
+			verbose(appdata.configDir, "is a file")
+			verbose("Defaulting to the config dir in the home directory")
 			writeFile(appdata.configFileBackup)
 			hideFile(appdata.configFileBackup)
 			return
