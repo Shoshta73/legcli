@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"fmt"
 	"os"
 	"path"
@@ -31,25 +32,25 @@ var appdata APPDATA
 
 // command Line argumens
 type ARGS struct {
-	init  bool
-	flags APPFLAGS
-}
-
-type APPFLAGS struct {
-	verbose bool
+	init          bool
 }
 
 var cliArgs ARGS = ARGS{
-	init: false,
-	flags: APPFLAGS{
-		verbose: false,
-	},
+	init:          false,
 }
 
-func parseArgs(args []string) {
-	if args[0] == "init" {
-		cliArgs.init = true
+func parseArgs() {
+	flag.BoolVar(&cliArgs.init, "init", false, "initialise app and create config file")
+	flag.BoolVar(&cliArgs.init, "i", false, "initialise app and create config file")
+	flag.BoolVar(&cliArgs.initBenchmark, "init-benchmark", false, "log the time it took to initialize the app")
+
+	flag.Usage = func() {
+		println("Usage: legcli [options]")
+		println("Options:")
+		println("   --init    | -i      Initialise app and create config file")
 	}
+
+	flag.Parse()
 }
 
 func getConfigData(f string) {
@@ -170,11 +171,8 @@ func writeConfigFile(file string, d CFGDATA) {
 }
 
 func main() {
-	args := os.Args[1:]
-	println(args)
-	if len(args) > 0 {
-		parseArgs(args)
 	}
+	parseArgs()
 	if cliArgs.init {
 		if appdata.initialized {
 			return
