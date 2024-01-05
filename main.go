@@ -8,6 +8,7 @@ import (
 	"path"
 	"runtime"
 	"syscall"
+	"time"
 
 	"gopkg.in/ini.v1"
 )
@@ -22,6 +23,7 @@ type APPCFG struct {
 
 type APPDATA struct {
 	initialized      bool
+	initTime         time.Duration
 	configDir        string
 	configFile       string
 	configFileBackup string
@@ -33,10 +35,12 @@ var appdata APPDATA
 // command Line argumens
 type ARGS struct {
 	init          bool
+	initBenchmark bool
 }
 
 var cliArgs ARGS = ARGS{
 	init:          false,
+	initBenchmark: false,
 }
 
 func parseArgs() {
@@ -64,6 +68,7 @@ func getConfigData(f string) {
 }
 
 func init() {
+	start := time.Now()
 	appdata.initialized = false
 	userConfigDir, err := os.UserConfigDir()
 	if err != nil {
@@ -104,6 +109,7 @@ func init() {
 	if appdata.initialized {
 		getConfigData(useConfigFile)
 	}
+	appdata.initTime = time.Since(start)
 }
 
 type CFGDATA struct {
@@ -171,6 +177,9 @@ func writeConfigFile(file string, d CFGDATA) {
 }
 
 func main() {
+	if cliArgs.initBenchmark {
+		println("init time:", appdata.initTime)
+		return
 	}
 	parseArgs()
 	if cliArgs.init {
