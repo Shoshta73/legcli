@@ -51,7 +51,7 @@ func init() {
 	checkFile(appdata.filePaths.ConfigFileConfig)
 	checkFile(appdata.filePaths.ConfigFileBackup)
 	if appdata.initialized && useConfigFile != "" {
-		cfg, err := config.GetConfigData(useConfigFile)
+		cfg, err := config.GetConfigFileContents(useConfigFile)
 		p(err)
 		appdata.config = *cfg
 	}

@@ -7,7 +7,7 @@ type ConfigData struct {
 	DefaultLicence string
 }
 
-func GetConfigData(file string) (*ConfigData, error) {
+func GetConfigFileContents(file string) (*ConfigData, error) {
 	cd := ConfigData{
 		Fullname:       "",
 		DefaultLicence: "",
