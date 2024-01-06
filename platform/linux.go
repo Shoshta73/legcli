@@ -3,23 +3,18 @@
 package main
 
 import (
-	"fmt"
 	"os"
-	"path"
 	"time"
 
 	"github.com/Shoshta73/legcli/cmd"
 	"github.com/Shoshta73/legcli/config"
+	"github.com/Shoshta73/legcli/setup"
 )
 
 type APPDATA struct {
-	initialized       bool
-	configDir         string
-	configFileDefault string
-	configFileConfig  string
-	configFileBackup  string
-
-	config config.ConfigData
+	initialized bool
+	filePaths   setup.ConfigPath
+	config      config.ConfigData
 }
 
 var appdata APPDATA
@@ -27,6 +22,7 @@ var initTime time.Duration
 
 func init() {
 	start := time.Now()
+	appdata.initialized = false
 
 	var p = func(e error) {
 		if e != nil {
@@ -43,27 +39,17 @@ func init() {
 		}
 	}
 
-	appdata.initialized = false
+	appdata.filePaths = *setup.GetPaths()
 
-	userConfigDir, err := os.UserConfigDir()
-	p(err)
-	userHomeDir, err := os.UserHomeDir()
-	p(err)
-
-	appdata.configDir = path.Join(userConfigDir, "legcli")
-	appdata.configFileDefault = path.Join(appdata.configDir, "config.ini")
-	appdata.configFileConfig = path.Join(userConfigDir, "legcli.config.ini")
-	appdata.configFileBackup = path.Join(userHomeDir, ".legcli.config.ini")
-
-	cdi, err := os.Stat(appdata.configDir)
+	cdi, err := os.Stat(appdata.filePaths.ConfigDir)
 	if err == nil {
 		if cdi.IsDir() {
-			checkFile(appdata.configFileDefault)
+			checkFile(appdata.filePaths.ConfigFileDefault)
 		}
 	}
 
-	checkFile(appdata.configFileConfig)
-	checkFile(appdata.configFileBackup)
+	checkFile(appdata.filePaths.ConfigFileConfig)
+	checkFile(appdata.filePaths.ConfigFileBackup)
 	if appdata.initialized && useConfigFile != "" {
 		cfg, err := config.GetConfigData(useConfigFile)
 		p(err)
