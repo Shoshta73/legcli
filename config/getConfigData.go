@@ -6,16 +6,11 @@ import (
 	"os"
 )
 
-type ConfigContents struct {
-	Fullname       string
-	DefaultLicence string
-}
-
 var p = fmt.Println
 
-func getConfigData() *ConfigContents {
+func GetConfigData() *ConfigData {
 AGAIN:
-	var data = ConfigContents{
+	var data = ConfigData{
 		Fullname:       "",
 		DefaultLicence: "",
 	}
