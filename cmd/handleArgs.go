@@ -6,4 +6,10 @@ import (
 )
 
 func HandleArgs(args *CliArgs, initialized bool, filepaths setup.ConfigPath) {
+	if args.Init {
+		ok := initProc.Init(initialized, filepaths)
+		if !ok {
+			panic("Failed to initialise app")
+		}
+	}
 }
