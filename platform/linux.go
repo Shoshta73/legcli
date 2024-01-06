@@ -61,8 +61,5 @@ func init() {
 
 func main() {
 	args := cmd.ParseCliArgs()
-	fmt.Println(args)
-	if args.Init {
-		panic("not implented yet")
-	}
+	cmd.HandleArgs(args, appdata.initialized, appdata.filePaths)
 }
