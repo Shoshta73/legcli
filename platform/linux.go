@@ -3,6 +3,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"time"
 
@@ -60,6 +61,9 @@ func init() {
 }
 
 func main() {
+	if !appdata.initialized {
+		fmt.Println("Config file not found. Run 'legcli --init' to create one.")
+	}
 	args := cmd.ParseCliArgs()
 	cmd.HandleArgs(args, appdata.initialized, appdata.filePaths)
 }
