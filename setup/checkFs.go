@@ -3,6 +3,7 @@ package setup
 import (
 	"os"
 	"path"
+	"runtime"
 )
 
 type ConfigPath struct {
@@ -29,7 +30,11 @@ func GetPaths() *ConfigPath {
 	cp.ConfigDir = path.Join(userConfigDir, "legcli")
 	cp.ConfigFileDefault = path.Join(cp.ConfigDir, "config.ini")
 	cp.ConfigFileConfig = path.Join(userConfigDir, "legcli.config.ini")
-	cp.ConfigFileBackup = path.Join(userHomeDir, ".legcli.config.ini")
+	if runtime.GOOS != "windows" {
+		cp.ConfigFileBackup = path.Join(userHomeDir, ".legcli.config.ini")
+	} else {
+		cp.ConfigFileBackup = path.Join(userHomeDir, "legcli.config.ini")
+	}
 
 	return cp
 }
