@@ -8,7 +8,7 @@ import (
 	"github.com/Shoshta73/legcli/setup"
 )
 
-func Init(initialized bool, filepaths setup.ConfigPath) bool {
+func Init(initialized bool, filepaths setup.ConfigPaths) bool {
 	if initialized {
 		fmt.Println("Config file already exists. Skipping init.")
 		return true

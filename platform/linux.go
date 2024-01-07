@@ -14,7 +14,7 @@ import (
 
 type APPDATA struct {
 	initialized bool
-	filePaths   setup.ConfigPath
+	filePaths   setup.ConfigPaths
 	config      config.ConfigData
 }
 

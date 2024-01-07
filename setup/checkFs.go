@@ -6,21 +6,21 @@ import (
 	"runtime"
 )
 
-type ConfigPath struct {
+type ConfigPaths struct {
 	ConfigDir         string
 	ConfigFileDefault string
 	ConfigFileConfig  string
 	ConfigFileBackup  string
 }
 
-func GetPaths() *ConfigPath {
+func GetPaths() *ConfigPaths {
 	var p = func(e error) {
 		if e != nil {
 			panic(e)
 		}
 	}
 
-	cp := new(ConfigPath)
+	cp := new(ConfigPaths)
 
 	userConfigDir, err := os.UserConfigDir()
 	p(err)
