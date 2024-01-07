@@ -9,6 +9,7 @@ type CliArgs struct {
 	Verbose       bool
 	InitBenchmark bool
 	Name          string
+	Licence       string
 }
 
 func ParseCliArgs() *CliArgs {
@@ -21,6 +22,9 @@ func ParseCliArgs() *CliArgs {
 	flag.BoolVar(&cliArgs.InitBenchmark, "init-benchmark", false, "log the time it took to initialize the app")
 	flag.StringVar(&cliArgs.Name, "name", "", "name of the user to override the default name")
 	flag.StringVar(&cliArgs.Name, "n", "", "name of the user to override the default name")
+	flag.StringVar(&cliArgs.Licence, "licence", "", "licence to override the default licence")
+	flag.StringVar(&cliArgs.Licence, "l", "", "licence to override the default licence")
+	flag.StringVar(&cliArgs.Licence, "lic", "", "licence to override the default licence")
 
 	flag.Usage = func() {
 		println("Usage: legcli [options]")
@@ -29,6 +33,10 @@ func ParseCliArgs() *CliArgs {
 		println("   --init    | -i      Initialise app and create config file")
 		println("   --verbose | -v      Verbose output")
 		println("   --name    | -n      Name of the user to override the default name")
+		println("   --licence |         ")
+		println("               -l      ")
+		println("               -lic    ")
+		println("                       Licence to override the default licence")
 	}
 
 	flag.Parse()
