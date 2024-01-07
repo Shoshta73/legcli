@@ -29,6 +29,9 @@ LIC:
 	data.DefaultLicence = scanner.Text()
 
 CONFIRM:
+	if data.DefaultLicence == "" {
+		goto LIC
+	}
 	p("Fullname:", data.Fullname)
 	p("Default licence:", data.DefaultLicence)
 	p("Is this OK?")
