@@ -11,5 +11,6 @@ func HandleArgs(args *CliArgs, initialized bool, filepaths setup.ConfigPath) {
 		if !ok {
 			panic("Failed to initialise app")
 		}
+		return
 	}
 }

@@ -41,8 +41,16 @@ func tryConfigDir(di fs.FileInfo) bool {
 func GetDirInfo(d string) fs.FileInfo {
 	di, err := os.Stat(d)
 	if err != nil {
-		fmt.Println("Error getting directory info: ", err)
-		panic(err)
+		if os.IsNotExist(err) {
+			err := os.Mkdir(d, 0755)
+			if err != nil {
+				panic(err)
+			}
+			di, err = os.Stat(d)
+			if err != nil {
+				panic(err)
+			}
+		}
 	}
 	return di
 }
