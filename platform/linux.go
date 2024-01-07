@@ -61,8 +61,9 @@ func init() {
 }
 
 func main() {
-	if !appdata.initialized {
+	if !appdata.initialized && len(os.Args) == 1 {
 		fmt.Println("Config file not found. Run 'legcli --init' to create one.")
+		return
 	}
 	args := cmd.ParseCliArgs()
 	cmd.HandleArgs(args, appdata.initialized, appdata.filePaths)
