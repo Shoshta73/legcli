@@ -5,11 +5,14 @@ import (
 )
 
 type CliArgs struct {
-	Init          bool
-	Verbose       bool
+	Init    bool
+	Verbose bool
+	Version bool
+	Name    string
+	Licence string
+
+	// for internal use only
 	InitBenchmark bool
-	Name          string
-	Licence       string
 }
 
 func ParseCliArgs() *CliArgs {
@@ -25,6 +28,8 @@ func ParseCliArgs() *CliArgs {
 	flag.StringVar(&cliArgs.Licence, "licence", "", "licence to override the default licence")
 	flag.StringVar(&cliArgs.Licence, "l", "", "licence to override the default licence")
 	flag.StringVar(&cliArgs.Licence, "lic", "", "licence to override the default licence")
+	flag.BoolVar(&cliArgs.Verbose, "version", false, "Show version and exit")
+	flag.BoolVar(&cliArgs.Verbose, "V", false, "Show version and exit")
 
 	flag.Usage = func() {
 		println("Usage: legcli [options]")
@@ -37,6 +42,7 @@ func ParseCliArgs() *CliArgs {
 		println("               -l      ")
 		println("               -lic    ")
 		println("                       Licence to override the default licence")
+		println("   --version | -V      Show version and exit")
 	}
 
 	flag.Parse()
