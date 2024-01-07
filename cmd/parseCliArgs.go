@@ -34,7 +34,7 @@ func ParseCliArgs() *CliArgs {
 	flag.Usage = func() {
 		println("Usage: legcli [options]")
 		println("Options:")
-		println("   --help    | -h      Print this help message")
+		println("   --help    | -h      Shows this message and exits")
 		println("   --init    | -i      Initialise app and create config file")
 		println("   --verbose | -v      Verbose output")
 		println("   --name    | -n      Name of the user to override the default name")
