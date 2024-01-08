@@ -26,5 +26,6 @@ func CreateDefaultLicence(fn string, l string) {
 	case "MPL-2.0":
 	case "Unlicense":
 	case "WTFPL":
+		licences.WTFPL(fn)
 	}
 }
