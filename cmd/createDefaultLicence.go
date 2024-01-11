@@ -9,7 +9,9 @@ func CreateDefaultLicence(fn string, l string) {
 
 	switch l {
 	case "AGPL-3.0":
+		licences.APGL30()
 	case "Apache-2.0":
+		licences.Apache20(fn)
 	case "BSD-2.0-Clause":
 	case "BSD-3.0-Clause":
 	case "BSD-4.0-Clause":

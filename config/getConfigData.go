@@ -4,9 +4,19 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"unicode"
 )
 
 var p = fmt.Println
+
+func isNumeric(s string) bool {
+	for _, c := range s {
+		if !unicode.IsDigit(c) {
+			return false
+		}
+	}
+	return true
+}
 
 func GetConfigData() *ConfigData {
 AGAIN:
@@ -14,6 +24,8 @@ AGAIN:
 		Fullname:       "",
 		DefaultLicence: "",
 	}
+
+	var selection string
 
 	scanner := bufio.NewScanner(os.Stdin)
 
@@ -25,8 +37,24 @@ NAME:
 
 LIC:
 	p("Enter your preffereddefault licence")
+	p("They are numbered so that you can choose from them")
+LICNUM:
+	p("Please enter number your preffered licence")
+	p("If you leave blank it will default to ISC Licence")
 	scanner.Scan()
-	data.DefaultLicence = scanner.Text()
+	selection = scanner.Text()
+	if selection == "" {
+		data.DefaultLicence = "ISC"
+		goto CONFIRM
+	}
+	if isNumeric(selection) {
+		switch selection {
+
+		}
+	} else {
+		p("Please enter a number")
+		goto LICNUM
+	}
 
 CONFIRM:
 	if data.DefaultLicence == "" {

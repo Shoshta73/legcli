@@ -1,4 +1,4 @@
-//go:build linux
+//go:build windows
 
 package main
 
@@ -41,7 +41,6 @@ func init() {
 	}
 
 	appdata.filePaths = *setup.GetPaths()
-
 	cdi, err := os.Stat(appdata.filePaths.ConfigDir)
 	if err == nil {
 		if cdi.IsDir() {
@@ -69,7 +68,6 @@ func main() {
 		fmt.Println("Config file not found. Run 'legcli --init' to create one.")
 		return
 	}
-
 	if len(os.Args) == 1 {
 		cmd.CreateDefaultLicence(appdata.config.Fullname, appdata.config.DefaultLicence)
 		return
